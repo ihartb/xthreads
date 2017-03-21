@@ -40,6 +40,3 @@ Signal all threads waiting on a specific condition on a specific lock. This will
 1. This library is not deadlock-proof. You can deadlock threads if you are not careful.
 2. Library does not yet support running on multiple cores in parallel. Threads are run concurrently.
 3. It could be faster. Creating another queue for locks would help. All operations are still performed in O(n) time.
-
-### Usage
-1. If you found this repository, you are probably looking for code or ideas to steal. I advise against this as it is a violation of the honor code and Dr. Sorber does look very closely at design patterns. 
