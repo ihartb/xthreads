@@ -1,13 +1,43 @@
-# CPSC/ECE 3220 Project 2
-# John McElvenny (jlmcelv)
+# xthreads
+### User mode thread library written in C
 
-# Short Description: 
-This project is a threading library. Library users are able to create threads to allow concurrent execution. Some features it has: thread creation, joining, yielding. It also has synchronization functions such as locking, waiting, and signaling. The API is modeled off of pthread but implemented using context swapping.
+### Installation
+1. Clone repository on to local machine
+2. run ~~~make~~~
+3. Compile your library with xthreads.a
 
-# Design:
-Before I wrote any code, I designed how my functions would work in "pseudocode" first. I kept track of what data structures, thread structures, and design patterns I would use beforehand. After designing everything by hand, I organized the code to employ thread structs, joining structs, and lock structs. My view was that the actual threading code could be straightforward and simple if I kept the "ugly" parts out (contexts, pointer island). The first things I did were polish an thoroughly test my data structures (Linked List, List, Queue) so as to not need to think about low-level routines when writing high-level code. Afterwards, I was able to focus on the design of the library. Overall, I think my code is clean, efficient, and understandable.
+### API 
+    threadInit()
+Must call before you use any threads. This initializes all data structures for usage.
 
-# Known problems:
-At the time of writing, I have an 82/90 on the autograder. All points are lost because I did not put interrupts in the right place. I've submitted a fix but I wont get to see how autograder likes it in time. So there might be some issues with interrupts being disabled when they shouldn't be.
+    threadCreate( void * (*)(void*), void*)
+Create a new thread and switch contexts to it. Accepts any function (argument is void pointer, returns void pointer). Returns an integer that is the new thread's unique ID
 
-The most obvious problem is what I lost (or did not receive) credit for in my final submission of the project. My library is slow (or not as fast as Dr. Sorber's) so obviously speed is a "known problem" although the library is still usable. My estimate is that speed is not too far off as all of my functions are O(n). Cooperative testing has no known issues. Preemptive testing is indefinite, meaning there are nearly infinite combinations of preemptive scheduling and there may well be a case that causes the library to crash.
+    threadYield()
+The current threading thread will stop running and allow the next thread in the running queue to execute.
+
+    threadJoin(int, void**)
+Join the current running thread with the thread ID specified in the argument. The result of the process blocking the current one will be stored in the second argument.
+
+    threadExit()
+Call this method when your thread is done running and can safely be terminated. Argument is the exit code of the current process (code given to threadJoin)
+
+    threadLock(int)
+Attempt to obtain a specific lock. The thread will halt until it receives the lock.
+
+    threadUnlock(int)
+Unlock a lock that the current thread holds.
+
+    threadWait(int, int)
+Wait on a specific condition on a specific lock. Arguments are the lock number and the condition number.
+
+    threadSignal(int, int)
+Signal all threads waiting on a specific condition on a specific lock. This will allow the next thread waiting to execute.
+
+### Known Issues
+1. This library is not deadlock-proof. You can deadlock threads if you are not careful.
+2. Library does not yet support running on multiple cores in parallel. Threads are run concurrently.
+3. It could be faster. Creating another queue for locks would help. All operations are still performed in O(n) time.
+
+### Usage
+1. If you found this repository, you are probably looking for code or ideas to steal. I advise against this as it is a violation of the honor code and Dr. Sorber does look very closely at design patterns. 
